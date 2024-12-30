@@ -1,4 +1,4 @@
-package com.example.gestoractividades.View
+package com.example.gestoractividades.EjemplosView
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -28,12 +28,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gestoractividades.R
 
-
+/*
 @Preview
 @Composable
-fun LoginScreen(
-
-) {
+fun LoginScreen(onNavigateToRegister: () -> Unit, onRegister: () -> Unit, onLogin: () -> Unit) {
 
     Column(
         modifier = Modifier
@@ -98,6 +96,6 @@ fun LoginScreen(
 
     }
 }
-
+*/
 
 

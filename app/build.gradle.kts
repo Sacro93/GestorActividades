@@ -52,12 +52,14 @@ android {
 dependencies {
 
     //Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
-    implementation("com.google.firebase:firebase-analytics")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
 
-    implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.firebase:firebase-firestore-ktx")
-
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.firestore.ktx)
+    //barras del sistema
+    implementation (libs.accompanist.systemuicontroller)
+    implementation(libs.androidx.foundation.layout)
 
     //Compose
     // Componentes principales de Compose
@@ -69,18 +71,19 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
-    implementation("androidx.navigation:navigation-compose:2.7.3")
+    implementation(libs.androidx.navigation.compose.v273)
 
 
     // Navegación en Compose
     implementation(libs.androidx.navigation.compose)
+    implementation (libs.androidx.lifecycle.runtime.compose)
 
 
     // Debugging
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.tooling)
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.9.0")
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
 
 
     // Testing de Compose

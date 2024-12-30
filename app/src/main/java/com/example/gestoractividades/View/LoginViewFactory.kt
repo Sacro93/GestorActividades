@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.gestoractividades.ViewModel.LoginScreen.LoginViewModel
 import com.google.firebase.auth.FirebaseAuth
+
 /*Tu LoginViewModel depende de FirebaseAuth y lo inicializas directamente en la clase.
 Esto puede ser problemático para pruebas o cambios futuros. Deberías usar una ViewModelProvider.Factory para inyectar dependencias.*/
 class LoginViewModelFactory(private val auth: FirebaseAuth) : ViewModelProvider.Factory {

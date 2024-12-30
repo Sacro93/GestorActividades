@@ -11,6 +11,43 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 
+// Estados para el inicio de sesión
+sealed class LoginState {
+    object Idle : LoginState()
+    object Loading : LoginState()
+    object Success : LoginState()
+    data class Error(val message: String) : LoginState()
+}
+
+class LoginViewModel(
+    private val auth: FirebaseAuth
+) : ViewModel() {
+    // Estado del inicio de sesión
+    private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
+    val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
+
+    // Función para manejar el inicio de sesión
+    fun loginUser(email: String, password: String) {
+        if (email.isBlank() || password.isBlank()) {
+            _loginState.value = LoginState.Error("Los campos no pueden estar vacíos")
+            return
+        }
+
+        _loginState.value = LoginState.Loading
+        viewModelScope.launch {
+            try {
+                auth.signInWithEmailAndPassword(email, password).await()
+                _loginState.value = LoginState.Success
+            } catch (e: Exception) {
+                _loginState.value = LoginState.Error("Error: ${e.localizedMessage}")
+            }
+        }
+    }
+
+}
+
+
+/*
 //Crea o actualiza el ViewModel encargado de manejar el inicio de sesión:
 
 sealed class LoginState {
@@ -43,3 +80,4 @@ class LoginViewModel(
         }
     }
 }
+*/

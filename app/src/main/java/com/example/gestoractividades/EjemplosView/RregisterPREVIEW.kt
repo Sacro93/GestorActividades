@@ -1,4 +1,4 @@
-package com.example.gestoractividades.View
+package com.example.gestoractividades.EjemplosView
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,9 +37,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gestoractividades.R
 
-@Preview(showBackground = true)
+
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(onRegister: () -> Unit, onBack: () -> Boolean) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -168,11 +167,11 @@ fun RegisterScreen() {
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxSize()
             ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Icono de retroceso",
-                    modifier = Modifier.size(24.dp)
-                )
+               // Icon(
+                   // imageVector = Icons.Default.ArrowBack,
+                  //  contentDescription = "Icono de retroceso",
+                  //  modifier = Modifier.size(24.dp)
+              //  )
                 Spacer(modifier = Modifier.width(4.dp)) // Espaciado entre ícono y texto
                 Text(
                     "Back",
