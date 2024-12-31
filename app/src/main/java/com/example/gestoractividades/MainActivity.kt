@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.gestoractividades.ui.theme.GestorActividadesTheme
 import androidx.navigation.compose.rememberNavController
-import com.example.gestoractividades.ViewModel.Navegacion.NavigationWrapper
+import com.example.gestoractividades.ViewModel.Navigation.NavigationWrapper
 
 
 class MainActivity : ComponentActivity() {

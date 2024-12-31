@@ -6,7 +6,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -21,6 +20,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -30,24 +31,24 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.gestoractividades.Model.Autenticacion
 import com.example.gestoractividades.R
-import com.example.gestoractividades.ViewModel.LoginScreen.LoginState
-import com.example.gestoractividades.ViewModel.LoginScreen.LoginViewModel
-import com.google.firebase.auth.FirebaseAuth
+import com.example.gestoractividades.ViewModel.VM_Login.LoginState
+import com.example.gestoractividades.ViewModel.VM_Login.LoginViewModel
+import com.example.gestoractividades.ViewModel.VM_Login.LoginViewModelFactory
 
 @Composable
 fun LoginScreen(
     onLogin: () -> Unit,   // Acción cuando se inicie sesión
     onRegister: () -> Unit, // Acción para ir al registro
-    factory: LoginViewModelFactory = LoginViewModelFactory(FirebaseAuth.getInstance())
+    factory: LoginViewModelFactory = LoginViewModelFactory(Autenticacion())
 ) {
     // Crea el ViewModel usando la fábrica
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
@@ -111,8 +112,14 @@ fun LoginScreen(
         // Botón "Iniciar Sesión"
         Button(
             onClick = { loginViewModel.loginUser(email, password) },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            enabled =  email.isNotBlank() && password.isNotBlank(),
+
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary) ,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .width(280.dp)
+                .height(48.dp),
+            shape = RoundedCornerShape(5.dp),
         ) {
             Text(
                 "Iniciar Sesión",
@@ -143,6 +150,20 @@ fun LoginScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
+                }
+            }
+            is LoginState.Error -> {
+                Text(
+                    text = (loginState as LoginState.Error).message,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+            is LoginState.Success -> {
+                // Llama al callback para navegar o realizar otra acción
+                LaunchedEffect(Unit) {
+                    onLogin()
                 }
             }
             else -> Unit

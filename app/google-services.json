@@ -1,13 +1,32 @@
 {
   "project_info": {
-    "project_number": "944600163060",
-    "project_id": "gestoractividades-b3a76",
-    "storage_bucket": "gestoractividades-b3a76.firebasestorage.app"
+    "project_number": "891960979123",
+    "project_id": "gestortareas-be9cd",
+    "storage_bucket": "gestortareas-be9cd.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:944600163060:android:cc2b94ffa5beb6b42bb4a1",
+        "mobilesdk_app_id": "1:891960979123:android:4409b3396a759657a5cac6",
+        "android_client_info": {
+          "package_name": "com.example.gestor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBab24bPmf3ueWQ3cUgR0bZYo_ywcnMT7M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:891960979123:android:5ea55c7b6d20a453a5cac6",
         "android_client_info": {
           "package_name": "com.example.gestoractividades"
         }
@@ -15,7 +34,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyARWdLoqH6ClEsLXqi-bQ0E-hJpPJpCotQ"
+          "current_key": "AIzaSyBab24bPmf3ueWQ3cUgR0bZYo_ywcnMT7M"
         }
       ],
       "services": {

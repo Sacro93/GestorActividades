@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gestoractividades.R
 
-
+/*
 @Composable
 fun RegisterScreen(onRegister: () -> Unit, onBack: () -> Boolean) {
     Column(
@@ -181,5 +181,5 @@ fun RegisterScreen(onRegister: () -> Unit, onBack: () -> Boolean) {
             }
         }
     }
-}
+}*/
 

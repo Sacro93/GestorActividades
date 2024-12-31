@@ -1,4 +1,4 @@
-package com.example.gestoractividades.ViewModel.Navegacion
+package com.example.gestoractividades.ViewModel.Navigation
 
 
 sealed class Routes(val route: String) {
