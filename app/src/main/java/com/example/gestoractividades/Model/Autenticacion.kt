@@ -44,9 +44,12 @@ class Autenticacion (private val firebaseAuth: FirebaseAuth= FirebaseAuth.getIns
 
     // Función para obtener el usuario actualmente autenticado
     fun getCurrentUser(): String? {
-        return firebaseAuth.currentUser?.email // Devuelve el correo electrónico del usuario autenticado o null
+        return firebaseAuth.currentUser?.email
     }
-    // Función para cerrar sesión
+    /* Función para cerrar sesión
+    logoutUser encapsula la lógica directa para interactuar con Firebase,
+    es decir, realizar el cierre de sesión real (firebaseAuth.signOut()).
+     Este método es puramente técnico y pertenece al nivel del modelo.*/
     fun logoutUser() {
         firebaseAuth.signOut()
     }

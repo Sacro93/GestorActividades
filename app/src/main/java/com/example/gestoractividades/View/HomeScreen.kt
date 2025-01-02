@@ -1,5 +1,6 @@
 package com.example.gestoractividades.View
 
+import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -42,44 +44,61 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.gestoractividades.R
+import com.example.gestoractividades.ViewModel.SessionVM.SessionActivaVM
 
 
 @Composable
 fun HomeScreen(
     onNavigateToCreateTask: () -> Unit,
-    onNavigateToListTasks: () -> Unit
+    onNavigateToListTasks: () -> Unit,
+    sessionActivaVM: SessionActivaVM,
+    logoutUser: () -> Unit,// Acción de navegación tras cerrar sesión
 
-) {
+    ) {
+    val recentActivities: List<Activity> = listOf() // Simula actividades recientes
+
     ConfigureSystemBars()
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(WindowInsets.systemBars.asPaddingValues())
             .background(Color.White),
-
-        //verticalArrangement = Arrangement.spacedBy(16.dp) // Espaciado entre composables
-        verticalArrangement = Arrangement.Top,
+        verticalArrangement = Arrangement.spacedBy(16.dp), // Espaciado uniforme entre composables
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(25.dp))
-        UserLoad()
+        UserLoad(
+            logoutUser = {
+                sessionActivaVM.cerrarSesion()// Llama al ViewModel
+                logoutUser()// Maneja la navegación en la UI
+
+            }
+        )
+
         OptionMenu(
             onNavigateToCreateTask = onNavigateToCreateTask,
             onNavigateToListTasks = onNavigateToListTasks
         )
-        RecentActivity()
+        if (recentActivities.isEmpty()) {
+            Text(
+                text = "Sin Tareas Recientes",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+        } else {
+            RecentActivity()
+        }
     }
 }
 
 
 @Composable
-fun UserLoad() {
-
+fun UserLoad(
+    logoutUser: () -> Unit
+) {
     var expanded by remember { mutableStateOf(false) } // Estado para el menú desplegable
-
-
     Row(
-
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
@@ -92,17 +111,13 @@ fun UserLoad() {
                 .size(48.dp)
                 .clip(CircleShape)
                 .clickable { expanded = true }
-
         )
         Spacer(modifier = Modifier.width(8.dp))
-
         Text(
-            "usuario",
+            text =  "Usuario desconocido",
             style = MaterialTheme.typography.bodyMedium
         )
     }
-
-
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = { expanded = false }// Cierra el menú al hacer clic afuera
@@ -116,7 +131,7 @@ fun UserLoad() {
         DropdownMenuItem(
             text = { Text("Cerrar sesion") },
             onClick = {
-                //accion cerrar sesion
+                logoutUser()
                 expanded = false
             }
         )
@@ -172,6 +187,8 @@ fun OptionMenu(
 @Composable
 fun RecentActivity() {
 
+    var confirmarAccion by remember { mutableStateOf(false) }
+
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -192,11 +209,11 @@ fun RecentActivity() {
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp)) // Separación entre imagen y texto
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Título
             Text(
-                text = "Lavar los platos", // Título principal
+                text = "Lavar los platos",
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -205,41 +222,64 @@ fun RecentActivity() {
 
             // Texto descriptivo con hora
             Text(
-                text = "Hora del evento: 14:30", // Aquí incluyes la hora del evento
+                text = "Hora del evento: 14:30",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
             )
 
-            Spacer(modifier = Modifier.height(16.dp)) // Espaciado antes de los botones
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Acciones (botones)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End // Alinea los botones al final
+                horizontalArrangement = Arrangement.End
             ) {
+                if (confirmarAccion) {
+                    AlertDialog(
+                        onDismissRequest = { confirmarAccion = false },
+                        confirmButton = {
+                            Button(
+                                onClick = {
+
+                                    confirmarAccion = false
+                                }) {
+                                Text("Confirmar")
+                            }
+                        },
+                        dismissButton = {
+                            Button(onClick = { confirmarAccion = false }) {
+                                Text("Cancelar")
+                            }
+                        },
+                        title = { Text("¿Estas seguro?") },
+                        text = { Text("¿Marcamos tarea realizada?") }
+                    )
+                }
+
+
                 // Botón "Marcar como hecho"
                 Button(
-                    onClick = { /* Acción para marcar como hecho */ },
+                    onClick = { confirmarAccion = true },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                    shape = RoundedCornerShape(12.dp) // Esquinas redondeadas
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Check, // Ícono de realizado
+                        imageVector = Icons.Default.Check,
                         contentDescription = "Marcar como hecho",
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
 
-                Spacer(modifier = Modifier.width(8.dp)) // Espaciado entre botones
+                Spacer(modifier = Modifier.width(8.dp))
 
                 // Botón "Anular"
                 Button(
                     onClick = { /* Acción para anular */ },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                    shape = RoundedCornerShape(12.dp) // Esquinas redondeadas
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Delete, // Ícono de tacho de basura
+                        imageVector = Icons.Default.Delete,
                         contentDescription = "Anular evento",
                         tint = MaterialTheme.colorScheme.onPrimary
                     )

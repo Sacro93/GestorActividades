@@ -69,7 +69,7 @@ fun LoginScreen(
     ) {
         // Imagen del logo
         Image(
-            painter = painterResource(id = R.drawable.icon_google), // Ajusta con tu recurso
+            painter = painterResource(id = R.drawable.icon_google),
             contentDescription = "Logo de la aplicación",
             modifier = Modifier.size(100.dp) // Tamaño del logo
         )

@@ -79,11 +79,14 @@ dependencies {
     implementation (libs.androidx.lifecycle.runtime.compose)
 
 
+
     // Debugging
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+
+
 
 
     // Testing de Compose
