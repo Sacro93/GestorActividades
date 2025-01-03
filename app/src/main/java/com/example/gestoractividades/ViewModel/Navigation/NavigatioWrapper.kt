@@ -9,13 +9,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.gestoractividades.Model.Autenticacion
+import com.example.gestoractividades.Model.TaskManager
+import com.example.gestoractividades.View.CreateTask
 import com.example.gestoractividades.View.HomeScreen
 
 import com.example.gestoractividades.View.ListadoTareas
 import com.example.gestoractividades.View.LoginScreen
 import com.example.gestoractividades.View.RegisterScreen
-import com.example.gestoractividades.ViewModel.SessionVM.SessionActivaVM
-import com.example.gestoractividades.ViewModel.SessionVM.SessionActivaVMFactory
+import com.example.gestoractividades.ViewModel.VM_CreateTask.CreateTaskViewModel
+import com.example.gestoractividades.ViewModel.VM_CreateTask.CreateTaskViewModelFactory
+import com.example.gestoractividades.ViewModel.VM_Session.SessionActivaVM
+import com.example.gestoractividades.ViewModel.VM_Session.SessionActivaVMFactory
 
 @Composable
 fun NavigationWrapper(navController: NavHostController) {
@@ -76,12 +80,24 @@ fun NavigationWrapper(navController: NavHostController) {
             )
         }
 
-
         composable(Routes.ListadoTareas.route) {
             ListadoTareas(
                 onBack = { navController.navigateUp() },
                 onCreateTask = { navController.navigate(Routes.CreateTask.route) })
 
         }
+
+        composable(Routes.CreateTask.route){
+            val createTaskViewModel: CreateTaskViewModel = viewModel(factory = CreateTaskViewModelFactory(
+                TaskManager()
+            )
+            )
+
+            CreateTask(
+                onBack = { navController.navigateUp() }, // Navega hacia atrás
+                createTaskViewModel = createTaskViewModel
+            )
+        }
+
     }
 }

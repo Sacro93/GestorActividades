@@ -44,7 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.gestoractividades.R
-import com.example.gestoractividades.ViewModel.SessionVM.SessionActivaVM
+import com.example.gestoractividades.ViewModel.VM_Session.SessionActivaVM
 
 
 @Composable

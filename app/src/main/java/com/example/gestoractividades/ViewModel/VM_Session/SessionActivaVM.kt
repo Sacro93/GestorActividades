@@ -1,4 +1,4 @@
-package com.example.gestoractividades.ViewModel.SessionVM
+package com.example.gestoractividades.ViewModel.VM_Session
 
 import androidx.lifecycle.ViewModel
 import com.example.gestoractividades.Model.Autenticacion
