@@ -6,6 +6,6 @@ sealed class Routes(val route: String) {
     object Register : Routes("register")
     object Home : Routes("home")
     object ListadoTareas : Routes("listadoTareas")
-    object CreateTask : Routes("createTask")
+    object CrearTarea : Routes("crearTarea")
 }
 

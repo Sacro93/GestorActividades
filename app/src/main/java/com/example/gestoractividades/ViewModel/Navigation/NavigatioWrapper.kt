@@ -3,38 +3,57 @@ package com.example.gestoractividades.ViewModel.Navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.gestoractividades.Model.Autenticacion
-import com.example.gestoractividades.Model.TaskManager
-import com.example.gestoractividades.View.CreateTask
+import com.example.gestoractividades.Model.TareasRepository
+import com.example.gestoractividades.View.CrearTarea
 import com.example.gestoractividades.View.HomeScreen
-
 import com.example.gestoractividades.View.ListadoTareas
 import com.example.gestoractividades.View.LoginScreen
 import com.example.gestoractividades.View.RegisterScreen
-import com.example.gestoractividades.ViewModel.VM_CreateTask.CreateTaskViewModel
-import com.example.gestoractividades.ViewModel.VM_CreateTask.CreateTaskViewModelFactory
+import com.example.gestoractividades.ViewModel.VM_CreateTask.CrearTareaViewModel
+import com.example.gestoractividades.ViewModel.VM_CreateTask.CrearTareaViewModelFactory
+import com.example.gestoractividades.ViewModel.VM_Home.HomeViewModel
+import com.example.gestoractividades.ViewModel.VM_Home.HomeViewModelFactory
+import com.example.gestoractividades.ViewModel.VM_ListadoTareas.ListadoTareasViewModel
+import com.example.gestoractividades.ViewModel.VM_ListadoTareas.ListadoTareasViewModelFactory
 import com.example.gestoractividades.ViewModel.VM_Session.SessionActivaVM
 import com.example.gestoractividades.ViewModel.VM_Session.SessionActivaVMFactory
+import com.google.firebase.firestore.FirebaseFirestore
+
 
 @Composable
 fun NavigationWrapper(navController: NavHostController) {
 
-
-    //Debo instanciar el VM para verificar sesion activa
-    //esto se podria hacer en un composable aparte llamado MainScreen por ejemplo, para manejar que la sesion este activa o no
     val sessionActivaVM: SessionActivaVM = viewModel(
         factory = SessionActivaVMFactory(Autenticacion())
     )
-    val userEmail by sessionActivaVM.userEmail.collectAsStateWithLifecycle()
 
+    // Llama a fetchCurrentUser al iniciar
     LaunchedEffect(Unit) {
         sessionActivaVM.fetchCurrentUser()
+    }
 
+    val userEmail by sessionActivaVM.userEmail.collectAsStateWithLifecycle()
+
+
+
+    val context = LocalContext.current
+    val tareasRepository = remember {
+        TareasRepository(
+            contexto = context,
+            firestore = FirebaseFirestore.getInstance()
+        )
+    }
+
+    // Redirigir a Home o Login según el estado de la sesión
+    LaunchedEffect(userEmail) {
         if (userEmail != null) {
             navController.navigate(Routes.Home.route) {
                 popUpTo(Routes.Login.route) { inclusive = true }
@@ -43,15 +62,14 @@ fun NavigationWrapper(navController: NavHostController) {
             navController.navigate(Routes.Login.route) {
                 popUpTo(Routes.Login.route) { inclusive = true }
             }
-
         }
     }
 
+    // Configurar la navegación
     NavHost(
         navController = navController,
         startDestination = if (userEmail != null) Routes.Home.route else Routes.Login.route
-    )// Define la pantalla inicial
-    {
+    ) {
         composable(Routes.Login.route) {
             LoginScreen(
                 onLogin = { navController.navigate(Routes.Home.route) },
@@ -65,39 +83,55 @@ fun NavigationWrapper(navController: NavHostController) {
                 onBack = { navController.navigateUp() }
             )
         }
+
         composable(Routes.Home.route) {
-            val sessionActivaVM: SessionActivaVM = viewModel(factory = SessionActivaVMFactory(Autenticacion()))
+            // Usa la instancia única de SessionActivaVM
+            val homeViewModel: HomeViewModel = viewModel(
+                factory = HomeViewModelFactory(sessionActivaVM)
+            )
 
             HomeScreen(
-                onNavigateToCreateTask = { navController.navigate(Routes.CreateTask.route) },
+                onNavigateToCreateTask = { navController.navigate(Routes.CrearTarea.route) },
                 onNavigateToListTasks = { navController.navigate(Routes.ListadoTareas.route) },
-                sessionActivaVM = sessionActivaVM,//viewModel
+                homeViewModel = homeViewModel,
                 logoutUser = {
+                    sessionActivaVM.cerrarSesion()
                     navController.navigate(Routes.Login.route) {
                         popUpTo(Routes.Home.route) { inclusive = true }
                     }
-                }
+                },
+                sessionActivaVM = sessionActivaVM // Usa la misma instancia
             )
         }
+
+
 
         composable(Routes.ListadoTareas.route) {
+            val listadoTareasViewModel: ListadoTareasViewModel = viewModel(
+                factory = ListadoTareasViewModelFactory(tareasRepository)
+            )
+
             ListadoTareas(
-                onBack = { navController.navigateUp() },
-                onCreateTask = { navController.navigate(Routes.CreateTask.route) })
-
-        }
-
-        composable(Routes.CreateTask.route){
-            val createTaskViewModel: CreateTaskViewModel = viewModel(factory = CreateTaskViewModelFactory(
-                TaskManager()
-            )
-            )
-
-            CreateTask(
-                onBack = { navController.navigateUp() }, // Navega hacia atrás
-                createTaskViewModel = createTaskViewModel
+                viewModel = listadoTareasViewModel,
+                onBack = { navController.navigateUp() }
             )
         }
 
+        composable(Routes.CrearTarea.route) {
+            val crearTareaViewModel: CrearTareaViewModel = viewModel(
+                factory = CrearTareaViewModelFactory(
+                    TareasRepository(
+                        contexto = LocalContext.current,
+                        firestore = FirebaseFirestore.getInstance()
+                    )
+                )
+            )
+
+            CrearTarea(
+                viewModel = crearTareaViewModel,
+                        onBack = { navController.navigateUp() }
+            )
+        }
     }
 }
+

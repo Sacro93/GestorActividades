@@ -8,7 +8,8 @@ import kotlinx.coroutines.flow.asStateFlow
 
 
 class SessionActivaVM(
-    private val autenticacion: Autenticacion
+    private val autenticacion: Autenticacion,
+
 ) : ViewModel() {
 
     private val _userEmail = MutableStateFlow<String?>(null)

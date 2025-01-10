@@ -1,6 +1,5 @@
 package com.example.gestoractividades.View
 
-import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,20 +18,14 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,51 +37,50 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.gestoractividades.R
+import com.example.gestoractividades.ViewModel.VM_Home.HomeViewModel
 import com.example.gestoractividades.ViewModel.VM_Session.SessionActivaVM
 
+/*fun formatTimestamp(timestamp: Long): String {
+    val sdf = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
+    return sdf.format(java.util.Date(timestamp))
+}*/
 
 @Composable
 fun HomeScreen(
     onNavigateToCreateTask: () -> Unit,
     onNavigateToListTasks: () -> Unit,
+    homeViewModel: HomeViewModel,
     sessionActivaVM: SessionActivaVM,
-    logoutUser: () -> Unit,// Acción de navegación tras cerrar sesión
+    logoutUser: () -> Unit
+) {
 
-    ) {
-    val recentActivities: List<Activity> = listOf() // Simula actividades recientes
 
     ConfigureSystemBars()
+
+    LaunchedEffect(Unit) {
+        sessionActivaVM.fetchCurrentUser()
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(WindowInsets.systemBars.asPaddingValues())
             .background(Color.White),
-        verticalArrangement = Arrangement.spacedBy(16.dp), // Espaciado uniforme entre composables
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(25.dp))
+        // Usuario y cierre de sesión
         UserLoad(
             logoutUser = {
-                sessionActivaVM.cerrarSesion()// Llama al ViewModel
-                logoutUser()// Maneja la navegación en la UI
-
+                homeViewModel.cerrarSesion() // Llama al ViewModel para cerrar sesión
+                logoutUser() // Navegación tras cerrar sesión
             }
         )
-
+        // Opciones del menú
         OptionMenu(
             onNavigateToCreateTask = onNavigateToCreateTask,
             onNavigateToListTasks = onNavigateToListTasks
         )
-        if (recentActivities.isEmpty()) {
-            Text(
-                text = "Sin Tareas Recientes",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-        } else {
-            RecentActivity()
-        }
     }
 }
 
@@ -114,7 +106,7 @@ fun UserLoad(
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            text =  "Usuario desconocido",
+            text = "Usuario desconocido",
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -162,7 +154,7 @@ fun OptionMenu(
             Text(
                 "Crear tarea",
                 color = MaterialTheme.colorScheme.onPrimary,
-                style = MaterialTheme.typography.labelLarge, // Tipografía estándar para botones
+                style = MaterialTheme.typography.labelLarge,
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -171,8 +163,8 @@ fun OptionMenu(
             onClick = onNavigateToListTasks,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp), // Tamaño uniforme
-            shape = RoundedCornerShape(16.dp), // Botones más cuadrados con esquinas redondeadas
+                .height(56.dp),
+            shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Text(
@@ -184,112 +176,80 @@ fun OptionMenu(
     }
 }
 
+
+/*
 @Composable
-fun RecentActivity() {
-
-    var confirmarAccion by remember { mutableStateOf(false) }
-
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        shape = RoundedCornerShape(10.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp) // Espaciado interno
+fun RecentActivity(
+    task: Pair<String, Task>?,
+    onMarkAsDone: (String, Task) -> Unit,
+    onDelete: (String) -> Unit
+) {
+    if (task == null) {
+        Text(
+            text = "Sin Tareas Recientes",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(16.dp)
+        )
+    } else {
+        val (taskId, taskData) = task
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            shape = RoundedCornerShape(10.dp),
+            elevation = CardDefaults.cardElevation(4.dp)
         ) {
-            // Imagen
-            Image(
-                painter = painterResource(id = R.drawable.platos_),
-                contentDescription = "Imagen del evento",
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Título
-            Text(
-                text = "Lavar los platos",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Texto descriptivo con hora
-            Text(
-                text = "Hora del evento: 14:30",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Acciones (botones)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+            Column(
+                modifier = Modifier.padding(16.dp)
             ) {
-                if (confirmarAccion) {
-                    AlertDialog(
-                        onDismissRequest = { confirmarAccion = false },
-                        confirmButton = {
-                            Button(
-                                onClick = {
-
-                                    confirmarAccion = false
-                                }) {
-                                Text("Confirmar")
-                            }
-                        },
-                        dismissButton = {
-                            Button(onClick = { confirmarAccion = false }) {
-                                Text("Cancelar")
-                            }
-                        },
-                        title = { Text("¿Estas seguro?") },
-                        text = { Text("¿Marcamos tarea realizada?") }
+                // Imagen
+                if (!taskData.imagen.isNullOrEmpty()) {
+                    Image(
+                        painter = rememberAsyncImagePainter(model = taskData.imagen),
+                        contentDescription = "Imagen del evento",
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
+                Text(
+                    text = taskData.nombre,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(
+                    text = taskData.descripcion,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "Fecha y hora: ${formatTimestamp(taskData.fechaHora)}",
+                    style = MaterialTheme.typography.bodySmall
+                )
 
-
-                // Botón "Marcar como hecho"
-                Button(
-                    onClick = { confirmarAccion = true },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                    shape = RoundedCornerShape(12.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = "Marcar como hecho",
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                // Botón "Anular"
-                Button(
-                    onClick = { /* Acción para anular */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Anular evento",
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
+                    Button(onClick = { onMarkAsDone(taskId, taskData) }) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Marcar como hecho"
+                        )
+                    }
+                    Button(onClick = { onDelete(taskId) }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Eliminar tarea"
+                        )
+                    }
                 }
             }
         }
     }
 }
 
-
+*/
 
 
 

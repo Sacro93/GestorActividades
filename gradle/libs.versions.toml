@@ -3,6 +3,8 @@ accompanistSystemuicontroller = "0.30.1"
 agp = "8.7.3"
 appcompat = "1.7.0"
 coilCompose = "2.4.0"
+coilKtCoilCompose = "2.2.2"
+coreKtxVersion = "1.12.0"
 firebaseBom = "33.7.0"
 firebaseBomVersion = "33.7.0"
 foundationLayout = "1.7.6"
@@ -21,15 +23,19 @@ navigationCompose="2.8.5"
 kotlinxSerialization =" 1.6.3"
 navigationComposeVersion = "2.8.5"
 firebaseStorage = "21.0.1"
+composeMaterialCore = "1.4.0"
+media3Exoplayer = "1.5.1"
 
 [libraries]
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-ktx-v1120 = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
 androidx-foundation-layout = { module = "androidx.compose.foundation:foundation-layout", version.ref = "foundationLayout" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
 androidx-navigation-compose-v273 = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+coil-compose-v222 = { module = "io.coil-kt:coil-compose", version.ref = "coilKtCoilCompose" }
 com-google-firebase-firebase-firestore-ktx = { module = "com.google.firebase:firebase-firestore-ktx" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
@@ -53,7 +59,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-navigation-compose ={module="androidx.navigation:navigation-compose", version.ref="navigationCompose"}
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
 kotlinx-serialization-json ={module="org.jetbrains.kotlinx:kotlinx-serialization-json",version.ref="kotlinxSerialization"}
-
+firebase-firestone={module="com.google.firebase:firebase-firestone"}
 
 
 
@@ -61,6 +67,8 @@ kotlinx-serialization-json ={module="org.jetbrains.kotlinx:kotlinx-serialization
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
+androidx-compose-material-core = { group = "androidx.wear.compose", name = "compose-material-core", version.ref = "composeMaterialCore" }
+androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3Exoplayer" }
 
 
 

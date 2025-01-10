@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.gestoractividades"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -62,6 +62,7 @@ dependencies {
 
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
+    implementation (libs.androidx.core.ktx.v1120)
 
 
     //Firerstone
@@ -92,6 +93,8 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation (libs.androidx.lifecycle.runtime.compose)
     implementation(libs.firebase.storage)
+    implementation(libs.androidx.compose.material.core)
+    implementation(libs.androidx.media3.exoplayer)
 
 
     // Debugging
@@ -100,6 +103,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
 
+    implementation (libs.coil.compose.v222)
 
 
 
