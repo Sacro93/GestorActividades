@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.gestoractividades"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -51,12 +51,27 @@ android {
 
 dependencies {
 
+
+    //camara??
+
+    implementation(libs.coil.compose)
+
     //Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
 
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
+    implementation (libs.androidx.core.ktx.v1120)
+
+
+    //Firerstone
+
+    implementation (platform(libs.firebase.bom.v3200))
+    implementation (libs.google.firebase.firestore.ktx)
+    implementation (libs.com.google.firebase.firebase.firestore.ktx)
+    implementation (libs.kotlinx.coroutines.play.services)
+
     //barras del sistema
     implementation (libs.accompanist.systemuicontroller)
     implementation(libs.androidx.foundation.layout)
@@ -77,6 +92,9 @@ dependencies {
     // Navegación en Compose
     implementation(libs.androidx.navigation.compose)
     implementation (libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.firebase.storage)
+    implementation(libs.androidx.compose.material.core)
+    implementation(libs.androidx.media3.exoplayer)
 
 
     // Debugging
@@ -84,6 +102,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+
+    implementation (libs.coil.compose.v222)
+
 
 
     // Testing de Compose

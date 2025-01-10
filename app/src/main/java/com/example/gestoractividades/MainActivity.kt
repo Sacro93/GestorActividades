@@ -6,11 +6,13 @@ import androidx.activity.compose.setContent
 import com.example.gestoractividades.ui.theme.GestorActividadesTheme
 import androidx.navigation.compose.rememberNavController
 import com.example.gestoractividades.ViewModel.Navigation.NavigationWrapper
+import com.google.firebase.FirebaseApp
 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //FirebaseApp.initializeApp(this)
         setContent {
             GestorActividadesTheme {
                 val navController = rememberNavController()

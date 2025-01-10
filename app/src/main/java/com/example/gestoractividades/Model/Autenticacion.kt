@@ -2,6 +2,7 @@ package com.example.gestoractividades.Model
 
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.tasks.await
+
 /*Separación de responsabilidades:
 
 El modelo solo se ocupa de interactuar con FirebaseAuth.
@@ -10,7 +11,7 @@ Manejo de errores:
 
 Devuelve un Result<Unit> para indicar si la operación fue exitosa o falló, lo que facilita el manejo de errores en los ViewModels.*/
 
-class Autenticacion (private val firebaseAuth: FirebaseAuth= FirebaseAuth.getInstance()){
+class Autenticacion(private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()) {
 
     // Función para registrar un usuario
     suspend fun registerUser(email: String, password: String): Result<String> {
@@ -18,7 +19,7 @@ class Autenticacion (private val firebaseAuth: FirebaseAuth= FirebaseAuth.getIns
             firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             Result.success("Registro exitoso") // Registro exitoso
         } catch (e: Exception) {
-            Result.failure(e) // Error durante el registro
+            Result.failure(e)
         }
     }
 
@@ -28,7 +29,7 @@ class Autenticacion (private val firebaseAuth: FirebaseAuth= FirebaseAuth.getIns
             firebaseAuth.signInWithEmailAndPassword(email, password).await()
             Result.success(Unit) // Inicio de sesión exitoso
         } catch (e: Exception) {
-            Result.failure(e) // Error durante el inicio de sesión
+            Result.failure(e)
         }
     }
 
@@ -44,9 +45,10 @@ class Autenticacion (private val firebaseAuth: FirebaseAuth= FirebaseAuth.getIns
 
     // Función para obtener el usuario actualmente autenticado
     fun getCurrentUser(): String? {
-        return firebaseAuth.currentUser?.email // Devuelve el correo electrónico del usuario autenticado o null
+        return firebaseAuth.currentUser?.email
     }
-    // Función para cerrar sesión
+
+    //Función para cerrar sesión
     fun logoutUser() {
         firebaseAuth.signOut()
     }
