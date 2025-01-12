@@ -71,6 +71,7 @@ RegisterViewModelFactory es una clase que extiende ViewModelProvider.Factory,
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var passwordsMatch by remember { mutableStateOf(true) }
+    var username by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) } // Estado para mostrar/ocultar contraseña
 
     Column(
@@ -111,6 +112,26 @@ RegisterViewModelFactory es una clase que extiende ViewModelProvider.Factory,
                 )
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = username,
+            onValueChange = { username = it },
+            shape = RoundedCornerShape(5.dp),
+            label = {
+                Text(
+                    "Username", style = MaterialTheme.typography.bodyMedium.copy(
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                )
+            },
+            keyboardOptions = KeyboardOptions.Default,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
@@ -200,7 +221,7 @@ RegisterViewModelFactory es una clase que extiende ViewModelProvider.Factory,
 
         // Botón de Registro
         Button(
-            onClick = { registerViewModel.registerUser(email, password) },
+            onClick = { registerViewModel.registerUser(email, password,username) },
             enabled = passwordsMatch && email.isNotBlank() && password.isNotBlank(),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)

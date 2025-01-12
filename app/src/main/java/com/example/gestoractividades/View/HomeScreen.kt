@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -26,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,6 +59,7 @@ fun HomeScreen(
 
 
     ConfigureSystemBars()
+    val username by sessionActivaVM.username.collectAsState()
 
     LaunchedEffect(Unit) {
         sessionActivaVM.fetchCurrentUser()
@@ -71,6 +75,7 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(25.dp))
         // Usuario y cierre de sesión
         UserLoad(
+            username = username ?: "Usuario desconocido",
             logoutUser = {
                 homeViewModel.cerrarSesion() // Llama al ViewModel para cerrar sesión
                 logoutUser() // Navegación tras cerrar sesión
@@ -84,49 +89,56 @@ fun HomeScreen(
     }
 }
 
-
 @Composable
 fun UserLoad(
+    username: String, // Recibe el nombre de usuario
     logoutUser: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) } // Estado para el menú desplegable
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(16.dp)
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.mia),
-            contentDescription = "foto usuario",
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .clickable { expanded = true }
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = "Usuario desconocido",
-            style = MaterialTheme.typography.bodyMedium
-        )
-    }
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { expanded = false }// Cierra el menú al hacer clic afuera
-    ) {
-        DropdownMenuItem(
-            text = { Text("Editar perfil") },
-            onClick = {
-                expanded = false
-            }
-        )
-        DropdownMenuItem(
-            text = { Text("Cerrar sesion") },
-            onClick = {
-                logoutUser()
-                expanded = false
-            }
-        )
+                .align(Alignment.CenterStart)
+                .clickable { expanded = true } // Expande el menú al tocar la imagen
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.mia),
+                contentDescription = "foto usuario",
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = username,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.wrapContentSize(Alignment.TopStart) // Asegura que se alinee correctamente
+        ) {
+            DropdownMenuItem(
+                text = { Text("Editar perfil") },
+                onClick = {
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Cerrar sesión") },
+                onClick = {
+                    logoutUser()
+                    expanded = false
+                }
+            )
+        }
     }
 }
 
@@ -175,83 +187,4 @@ fun OptionMenu(
         }
     }
 }
-
-
-/*
-@Composable
-fun RecentActivity(
-    task: Pair<String, Task>?,
-    onMarkAsDone: (String, Task) -> Unit,
-    onDelete: (String) -> Unit
-) {
-    if (task == null) {
-        Text(
-            text = "Sin Tareas Recientes",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(16.dp)
-        )
-    } else {
-        val (taskId, taskData) = task
-        Card(
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            shape = RoundedCornerShape(10.dp),
-            elevation = CardDefaults.cardElevation(4.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                // Imagen
-                if (!taskData.imagen.isNullOrEmpty()) {
-                    Image(
-                        painter = rememberAsyncImagePainter(model = taskData.imagen),
-                        contentDescription = "Imagen del evento",
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                Text(
-                    text = taskData.nombre,
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Text(
-                    text = taskData.descripcion,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = "Fecha y hora: ${formatTimestamp(taskData.fechaHora)}",
-                    style = MaterialTheme.typography.bodySmall
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Button(onClick = { onMarkAsDone(taskId, taskData) }) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = "Marcar como hecho"
-                        )
-                    }
-                    Button(onClick = { onDelete(taskId) }) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Eliminar tarea"
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-*/
-
-
-
-
 

@@ -1,6 +1,8 @@
 package com.example.gestoractividades.Model
 
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 /*Separación de responsabilidades:
@@ -11,17 +13,34 @@ Manejo de errores:
 
 Devuelve un Result<Unit> para indicar si la operación fue exitosa o falló, lo que facilita el manejo de errores en los ViewModels.*/
 
-class Autenticacion(private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()) {
+class Autenticacion(
+    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance(),
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+) {
 
     // Función para registrar un usuario
-    suspend fun registerUser(email: String, password: String): Result<String> {
+    suspend fun registerUser(email: String, password: String, username: String): Result<Unit> {
         return try {
-            firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-            Result.success("Registro exitoso") // Registro exitoso
+            // Registrar al usuario en FirebaseAuth
+            val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+            val userId = authResult.user?.uid
+                ?: return Result.failure(Exception("Error: No se pudo obtener el ID del usuario."))
+
+            // Guardar datos del usuario en Firestore
+            val saveResult = saveUserDetails(userId, username, email)
+            if (saveResult.isSuccess) {
+                Result.success(Unit) // Éxito
+            } else {
+                Result.failure(
+                    saveResult.exceptionOrNull()
+                        ?: Exception("Error desconocido al guardar en Firestore")
+                )
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
+
 
     // Función para iniciar sesión
     suspend fun loginUser(email: String, password: String): Result<Unit> {
@@ -31,6 +50,56 @@ class Autenticacion(private val firebaseAuth: FirebaseAuth = FirebaseAuth.getIns
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    // Agregar datos del usuario en Firestore
+    private suspend fun saveUserDetails(
+        userId: String,
+        username: String,
+        email: String
+    ): Result<Unit> {
+        return try {
+            val userData = mapOf(
+                "id" to userId, // Esto puedes omitirlo, ya que el ID es el documento mismo.
+                "username" to username,
+                "email" to email,
+                "createdAt" to Timestamp.now(),
+                "profileImageUrl" to "" // Si no tienes una imagen, puedes dejarlo vacío.
+            )
+            firestore.collection("Users").document(userId).set(userData).await()
+            Result.success(Unit) // Datos guardados exitosamente
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    /*Método para obtener detalles del usuario desde Firestore*/
+
+    suspend fun getUserDetails(userId: String): Result<Map<String, Any>> {
+        return try {
+            val snapshot = firestore.collection("Users").document(userId).get().await()
+            if (snapshot.exists()) {
+                Result.success(snapshot.data ?: emptyMap())
+            } else {
+                Result.failure(Exception("Usuario no encontrado"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
+    // Función para obtener el usuario actualmente autenticado
+    fun getCurrentUser(): String? {
+        return firebaseAuth.currentUser?.email
+    }
+
+    fun getCurrentUserId(): String? {
+        return firebaseAuth.currentUser?.uid
+    }
+
+    //Función para cerrar sesión
+    fun logoutUser() {
+        firebaseAuth.signOut()
     }
 
     //futuro
@@ -43,14 +112,5 @@ class Autenticacion(private val firebaseAuth: FirebaseAuth = FirebaseAuth.getIns
         }
     }
 
-    // Función para obtener el usuario actualmente autenticado
-    fun getCurrentUser(): String? {
-        return firebaseAuth.currentUser?.email
-    }
-
-    //Función para cerrar sesión
-    fun logoutUser() {
-        firebaseAuth.signOut()
-    }
 
 }
