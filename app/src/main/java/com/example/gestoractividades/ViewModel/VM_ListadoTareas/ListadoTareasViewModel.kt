@@ -11,8 +11,11 @@ import com.example.gestoractividades.Model.TareasRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import androidx.compose.runtime.State
+import com.example.gestoractividades.Model.Autenticacion
 
-class ListadoTareasViewModel(private val repository: TareasRepository) : ViewModel() {
+class ListadoTareasViewModel(private val repository: TareasRepository,
+                             private val autenticacion: Autenticacion
+) : ViewModel() {
 
     private val _tareas = mutableStateOf<List<Tarea>>(emptyList())
     val tareas: State<List<Tarea>> get() = _tareas
@@ -23,7 +26,10 @@ class ListadoTareasViewModel(private val repository: TareasRepository) : ViewMod
     fun cargarTareas() {
         viewModelScope.launch {
             try {
+                val userId = autenticacion.getCurrentUserId()
+                    ?: throw Exception("No se pudo obtener el ID del usuario. Intente iniciar sesión nuevamente.")
                 repository.obtenerTareas(
+                    userId = userId,
                     onSuccess = { tareas ->
                         _tareas.value = tareas
                     },
@@ -74,45 +80,3 @@ class ListadoTareasViewModel(private val repository: TareasRepository) : ViewMod
 }
 
 
-
-/*
-class ListadoTareasViewModel (
-    private val taskRepository: TaskRepository
-
-):ViewModel(){
-
-    private val _tasks = MutableStateFlow<List<Task>>(emptyList())
-    val tasks: StateFlow<List<Task>> = _tasks.asStateFlow()
-
-    init {
-        fetchTasks()
-    }
-
-    private fun fetchTasks() {
-        viewModelScope.launch {
-            val result = taskRepository.getTasks()
-            result.onSuccess { fetchedTasks ->
-                _tasks.value = fetchedTasks
-                Log.d("ListadoTareasViewModel", "Tareas obtenidas: $fetchedTasks")
-            }.onFailure { exception ->
-                Log.e("ListadoTareasViewModel", "Error al obtener tareas", exception)
-            }
-        }
-    }
-
-    fun markTaskAsDone(task: Task) {
-        viewModelScope.launch {
-            taskRepository.markTaskAsDone(task).onSuccess {
-                fetchTasks() // Actualizar la lista después de marcar como realizada
-            }
-        }
-    }
-
-    fun deleteTask(task: Task) {
-        viewModelScope.launch {
-            taskRepository.deleteTask(task.id).onSuccess {
-                fetchTasks() // Actualizar la lista después de eliminar
-            }
-        }
-    }
-}*/

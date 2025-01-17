@@ -53,6 +53,7 @@ dependencies {
 
 
     //camara??
+    implementation (libs.coil.compose.v210)
 
     implementation(libs.coil.compose)
 
@@ -102,7 +103,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-
     implementation (libs.coil.compose.v222)
 
 

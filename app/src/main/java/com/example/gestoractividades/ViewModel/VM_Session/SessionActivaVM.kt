@@ -31,18 +31,30 @@ class SessionActivaVM(
         val userId = autenticacion.getCurrentUserId() // Obtener ID del usuario autenticado
         if (userId != null) {
             viewModelScope.launch {
-                val result = autenticacion.getUserDetails(userId)
-                if (result.isSuccess) {
-                    val userDetails = result.getOrNull()
-                    _userEmail.value = userDetails?.get("email") as? String
-                    _username.value = userDetails?.get("username") as? String
-                } else {
-                    _userEmail.value = "Usuario desconocido"
-                    _username.value = "Usuario desconocido"
+                try {
+                    val result = autenticacion.getUserDetails(userId)
+                    if (result.isSuccess) {
+                        val userDetails = result.getOrNull()
+                        _userEmail.value = userDetails?.get("email") as? String ?: "Email no disponible"
+                        _username.value = userDetails?.get("username") as? String ?: "Nombre no disponible"
+                    } else {
+                        // Si el resultado falla, asignar valores predeterminados
+                        _userEmail.value = "Usuario desconocido"
+                        _username.value = "Usuario desconocido"
+                    }
+                } catch (e: Exception) {
+                    // Manejo de errores en caso de excepciones inesperadas
+                    _userEmail.value = "Error al obtener email"
+                    _username.value = "Error al obtener nombre"
                 }
             }
+        } else {
+            // Si no hay usuario autenticado, asignar valores predeterminados
+            _userEmail.value = "Usuario no autenticado"
+            _username.value = "Usuario no autenticado"
         }
     }
+
 
     fun cerrarSesion() {
         autenticacion.logoutUser()

@@ -1,4 +1,4 @@
-package com.example.gestoractividades.EjemplosView
+/*package com.example.gestoractividades.EjemplosView
 
 
 
@@ -157,3 +157,4 @@ fun ItemTarea(
 fun PreviewListadoTareas() {
     ListadoTareasPreview()
 }
+*/

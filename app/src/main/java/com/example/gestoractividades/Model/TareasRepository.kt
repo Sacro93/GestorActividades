@@ -17,6 +17,7 @@ data class Tarea(
     val completada: Boolean = false,
     val imagenPath: String? = null, // Ruta de la imagen en memoria
     val fechaHora: Long = 0L,
+    val userId :String
 )
 
 /*
@@ -46,7 +47,8 @@ class TareasRepository(
         titulo: String,
         descripcion: String,
         fecha: Date,
-        imagen: Bitmap?
+        imagenPath: String?,
+        userId: String
     ) {
         val tareaId =
             firestore.collection("Tasks").document().id // Generar un ID único para la tarea
@@ -56,13 +58,13 @@ class TareasRepository(
             "titulo" to titulo,
             "descripcion" to descripcion,
             "completada" to false,
-            "fecha" to Timestamp(fecha) // Guardar la fecha como Timestamp en Firestore
+            "fecha" to Timestamp(fecha),// Guardar la fecha como Timestamp en Firestore
+            "userId" to userId
         )
 
         // Si la imagen no es nula, guardarla localmente y agregar su ruta a Firestore
-        if (imagen != null) {
-            val rutaImagen = guardarImagenLocal(imagen, tareaId)
-            tareaData["imagenPath"] = rutaImagen
+        if (imagenPath  != null) {
+            tareaData["imagenPath"] = imagenPath // Agregar ruta de la imagen
         }
 
         // Subir la tarea a Firestore
@@ -93,8 +95,14 @@ suspend fun eliminarTarea(id: String) {
         firestore.collection("Tasks").document(id).delete().await()
     }
 
-    fun obtenerTareas(onSuccess: (List<Tarea>) -> Unit, onFailure: (Exception) -> Unit) {
+    fun obtenerTareas(
+        userId: String, // Filtro por usuario
+        onSuccess: (List<Tarea>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
         firestore.collection("Tasks")
+            .whereEqualTo("userId", userId) // Filtrar tareas por userId
+
             .get()
             .addOnSuccessListener { snapshot ->
                 val tareas = snapshot.documents.mapNotNull { doc ->
@@ -105,13 +113,15 @@ suspend fun eliminarTarea(id: String) {
                     val fecha = doc.getTimestamp("fecha")?.toDate() ?: Date()
                     val imagenPath = doc.getString("imagenPath")
 
+
                     Tarea(
                         id = id,
                         titulo = titulo,
                         descripcion = descripcion,
                         completada = completada,
                         fechaHora = fecha.time,
-                        imagenPath = imagenPath
+                        imagenPath = imagenPath,
+                        userId = userId
                     )
                 }
                 onSuccess(tareas)
@@ -130,6 +140,7 @@ suspend fun eliminarTarea(id: String) {
                 val completada = documento.getBoolean("completada") ?: false
                 val fecha = documento.getTimestamp("fecha")?.toDate() ?: Date()
                 val imagenPath = documento.getString("imagenPath")
+                val userId = documento.getString("userId") ?: "" // Obtener el userId
 
                 Tarea(
                     id = id,
@@ -137,7 +148,8 @@ suspend fun eliminarTarea(id: String) {
                     descripcion = descripcion,
                     completada = completada,
                     fechaHora = fecha.time,
-                    imagenPath = imagenPath
+                    imagenPath = imagenPath,
+                    userId = userId // Asignar el userId al modelo
                 )
             } else {
                 null
@@ -146,4 +158,6 @@ suspend fun eliminarTarea(id: String) {
             null
         }
     }
+
 }
+

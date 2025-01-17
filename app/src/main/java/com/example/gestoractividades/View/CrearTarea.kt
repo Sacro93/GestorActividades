@@ -2,7 +2,11 @@ package com.example.gestoractividades.View
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.graphics.Bitmap
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -17,6 +21,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import java.io.File
+import java.io.FileOutputStream
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -31,6 +37,7 @@ fun CrearTarea(
     var descripcion by remember { mutableStateOf("") }
     var fechaHora by remember { mutableStateOf<Long?>(null) }
     val calendar = Calendar.getInstance()
+    var imagenPath by remember { mutableStateOf<String?>(null) }
 
     // Configurar DatePickerDialog y TimePickerDialog
     val datePickerDialog = DatePickerDialog(
@@ -55,6 +62,19 @@ fun CrearTarea(
         calendar.get(Calendar.MINUTE),
         true
     )
+
+    // Configurar el ActivityResultLauncher para capturar la imagen
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap ->
+        if (bitmap != null) {
+            val file = File(context.filesDir, "${System.currentTimeMillis()}.jpg")
+            FileOutputStream(file).use { fos ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+            }
+            imagenPath = file.absolutePath // Guardar la ruta de la imagen
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -107,11 +127,23 @@ fun CrearTarea(
         )
 
         Button(
+            onClick = { launcher.launch() }, // Lanzar cámara
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "Capturar Imagen")
+        }
+
+        // Mostrar ruta de la imagen capturada
+        imagenPath?.let {
+            Text(text = "Imagen capturada: $it", style = MaterialTheme.typography.bodySmall)
+        }
+
+        Button(
             onClick = {
                 viewModel.crearTarea(
                     titulo = titulo,
                     descripcion = descripcion,
-                    imagen = null, // Imagen ahora siempre es null
+                    imagenPath = imagenPath, // Pasar la ruta de la imagen
                     onSuccess = {
                         Toast.makeText(
                             context,
@@ -134,7 +166,7 @@ fun CrearTarea(
         ) {
             Text(text = "Guardar Tarea")
         }
-        // Botón para regresar al menú principal
+
         Button(onClick = onBack) {
             Text(text = "Volver al Menú Principal")
         }

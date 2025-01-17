@@ -59,6 +59,7 @@ fun HomeScreen(
 
 
     ConfigureSystemBars()
+    // Obtener el valor del nombre de usuario desde el ViewModel
     val username by sessionActivaVM.username.collectAsState()
 
     LaunchedEffect(Unit) {

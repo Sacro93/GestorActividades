@@ -25,6 +25,7 @@ import com.example.gestoractividades.ViewModel.VM_ListadoTareas.ListadoTareasVie
 import com.example.gestoractividades.ViewModel.VM_ListadoTareas.ListadoTareasViewModelFactory
 import com.example.gestoractividades.ViewModel.VM_Session.SessionActivaVM
 import com.example.gestoractividades.ViewModel.VM_Session.SessionActivaVMFactory
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 
@@ -108,7 +109,13 @@ fun NavigationWrapper(navController: NavHostController) {
 
         composable(Routes.ListadoTareas.route) {
             val listadoTareasViewModel: ListadoTareasViewModel = viewModel(
-                factory = ListadoTareasViewModelFactory(tareasRepository)
+                factory = ListadoTareasViewModelFactory(
+                    tareasRepository = tareasRepository,
+                    autenticacion = Autenticacion(
+                        firebaseAuth = FirebaseAuth.getInstance(),
+                        firestore = FirebaseFirestore.getInstance()
+                    )
+                )
             )
 
             ListadoTareas(
@@ -117,11 +124,16 @@ fun NavigationWrapper(navController: NavHostController) {
             )
         }
 
+
         composable(Routes.CrearTarea.route) {
             val crearTareaViewModel: CrearTareaViewModel = viewModel(
                 factory = CrearTareaViewModelFactory(
                     TareasRepository(
                         contexto = LocalContext.current,
+                        firestore = FirebaseFirestore.getInstance()
+                    ),
+                    Autenticacion(
+                        firebaseAuth = FirebaseAuth.getInstance(),
                         firestore = FirebaseFirestore.getInstance()
                     )
                 )
