@@ -19,8 +19,7 @@ sealed class LoginState {
 }
 
 class LoginViewModel(
-    private val autenticacion: Autenticacion = Autenticacion() // Inicialización directa
-
+    private val autenticacion: Autenticacion = Autenticacion()
 ) : ViewModel() {
     // Estado del inicio de sesión
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
@@ -32,7 +31,6 @@ class LoginViewModel(
             _loginState.value = LoginState.Error("Los campos no pueden estar vacíos")
             return
         }
-
         _loginState.value = LoginState.Loading
         viewModelScope.launch {
             val resultado = autenticacion.loginUser(email, password)
@@ -41,7 +39,6 @@ class LoginViewModel(
             } else {
                 LoginState.Error(resultado.exceptionOrNull()?.message ?: "Error desconocido")
             }
-
         }
     }
 }

@@ -108,14 +108,12 @@ fun LoginScreen(
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
-
         Spacer(modifier = Modifier.height(16.dp))
 
         // Botón "Iniciar Sesión"
         Button(
             onClick = { loginViewModel.loginUser(email, password) },
             enabled =  email.isNotBlank() && password.isNotBlank(),
-
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary) ,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)

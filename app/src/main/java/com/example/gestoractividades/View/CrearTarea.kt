@@ -68,11 +68,12 @@ fun CrearTarea(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
         if (bitmap != null) {
-            val file = File(context.filesDir, "${System.currentTimeMillis()}.jpg")
-            FileOutputStream(file).use { fos ->
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+            val savedPath = viewModel.guardarImagenLocal(bitmap)
+            if (savedPath != null) {
+                imagenPath = savedPath
+            } else {
+                Toast.makeText(context, "Error al guardar la imagen", Toast.LENGTH_SHORT).show()
             }
-            imagenPath = file.absolutePath // Guardar la ruta de la imagen
         }
     }
 
@@ -106,7 +107,8 @@ fun CrearTarea(
         // Campo para seleccionar fecha y hora
         OutlinedTextField(
             value = fechaHora?.let {
-                val sdf = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                val sdf = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm",
+                    Locale.getDefault())
                 sdf.format(Date(it))
             } ?: "Sin Fecha",
             onValueChange = { },
@@ -143,7 +145,7 @@ fun CrearTarea(
                 viewModel.crearTarea(
                     titulo = titulo,
                     descripcion = descripcion,
-                    imagenPath = imagenPath, // Pasar la ruta de la imagen
+                    imagenPath = imagenPath,
                     onSuccess = {
                         Toast.makeText(
                             context,

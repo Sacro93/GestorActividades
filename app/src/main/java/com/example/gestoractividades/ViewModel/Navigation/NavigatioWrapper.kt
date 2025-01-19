@@ -31,7 +31,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun NavigationWrapper(navController: NavHostController) {
-
     val sessionActivaVM: SessionActivaVM = viewModel(
         factory = SessionActivaVMFactory(Autenticacion())
     )
@@ -40,10 +39,7 @@ fun NavigationWrapper(navController: NavHostController) {
     LaunchedEffect(Unit) {
         sessionActivaVM.fetchCurrentUser()
     }
-
     val userEmail by sessionActivaVM.userEmail.collectAsStateWithLifecycle()
-
-
 
     val context = LocalContext.current
     val tareasRepository = remember {
@@ -52,7 +48,7 @@ fun NavigationWrapper(navController: NavHostController) {
             firestore = FirebaseFirestore.getInstance()
         )
     }
-
+/*
     // Redirigir a Home o Login según el estado de la sesión
     LaunchedEffect(userEmail) {
         if (userEmail != null) {
@@ -65,7 +61,7 @@ fun NavigationWrapper(navController: NavHostController) {
             }
         }
     }
-
+*/
     // Configurar la navegación
     NavHost(
         navController = navController,
@@ -141,7 +137,7 @@ fun NavigationWrapper(navController: NavHostController) {
 
             CrearTarea(
                 viewModel = crearTareaViewModel,
-                        onBack = { navController.navigateUp() }
+                onBack = { navController.navigateUp() }
             )
         }
     }

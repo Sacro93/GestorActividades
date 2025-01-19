@@ -18,7 +18,7 @@ class Autenticacion(
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) {
 
-    // Función para registrar un usuario
+    // Función que maneja el registro completo del usuario (Firebase Auth + Firestore)
     suspend fun registerUser(email: String, password: String, username: String): Result<Unit> {
         return try {
             // Registrar al usuario en FirebaseAuth
@@ -26,7 +26,7 @@ class Autenticacion(
             val userId = authResult.user?.uid
                 ?: return Result.failure(Exception("Error: No se pudo obtener el ID del usuario."))
 
-            // Guardar datos del usuario en Firestore
+            // Guardar datos adicionales del usuario en Firestore
             val saveResult = saveUserDetails(userId, username, email)
             if (saveResult.isSuccess) {
                 Result.success(Unit) // Éxito
@@ -52,7 +52,7 @@ class Autenticacion(
         }
     }
 
-    // Agregar datos del usuario en Firestore
+    // Función específica para guardar datos del usuario en Firestore
     private suspend fun saveUserDetails(
         userId: String,
         username: String,
@@ -60,23 +60,26 @@ class Autenticacion(
     ): Result<Unit> {
         return try {
             val userData = mapOf(
-                "id" to userId, // Esto puedes omitirlo, ya que el ID es el documento mismo.
+                "id" to userId, //omitir o borrar
                 "username" to username,
                 "email" to email,
                 "createdAt" to Timestamp.now(),
-                "profileImageUrl" to "" // Si no tienes una imagen, puedes dejarlo vacío.
+                "profileImageUrl" to "" // borrar
             )
             firestore.collection("Users").document(userId).set(userData).await()
-            Result.success(Unit) // Datos guardados exitosamente
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-    /*Método para obtener detalles del usuario desde Firestore*/
+    //Método para obtener detalles del usuario desde Firestore
 
     suspend fun getUserDetails(userId: String): Result<Map<String, Any>> {
         return try {
-            val snapshot = firestore.collection("Users").document(userId).get().await()
+            val snapshot = firestore.collection("Users")
+                .document(userId)
+                .get()
+                .await()
             if (snapshot.exists()) {
                 Result.success(snapshot.data ?: emptyMap())
             } else {

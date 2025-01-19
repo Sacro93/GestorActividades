@@ -24,9 +24,6 @@ data class Tarea(
 Repositorio (TareasRepository):
 
 Realiza las operaciones CRUD directas.
-No maneja estados ni lógica específica para casos de uso.Repositorio (TareasRepository):
-
-Realiza las operaciones CRUD directas.
 No maneja estados ni lógica específica para casos de uso.*/
 
 class TareasRepository(
@@ -34,7 +31,7 @@ class TareasRepository(
     private val firestore: FirebaseFirestore) {
 
     // Guardar imagen en memoria local y devolver la ruta del archivo
-    private fun guardarImagenLocal(imagen: Bitmap, nombre: String): String {
+    fun guardarImagenLocal(imagen: Bitmap, nombre: String): String {
         val archivo = File(contexto.filesDir, "$nombre.jpg") // Guardar en almacenamiento interno
         FileOutputStream(archivo).use { fos ->
             imagen.compress(Bitmap.CompressFormat.JPEG, 100, fos)
@@ -51,7 +48,9 @@ class TareasRepository(
         userId: String
     ) {
         val tareaId =
-            firestore.collection("Tasks").document().id // Generar un ID único para la tarea
+            firestore.collection("Tasks")
+                .document()
+                .id // Generar un ID único para la tarea
 
         val tareaData = mutableMapOf(
             "id" to tareaId,
@@ -61,10 +60,9 @@ class TareasRepository(
             "fecha" to Timestamp(fecha),// Guardar la fecha como Timestamp en Firestore
             "userId" to userId
         )
-
         // Si la imagen no es nula, guardarla localmente y agregar su ruta a Firestore
         if (imagenPath  != null) {
-            tareaData["imagenPath"] = imagenPath // Agregar ruta de la imagen
+            tareaData["imagenPath"] = imagenPath
         }
 
         // Subir la tarea a Firestore
@@ -74,7 +72,10 @@ class TareasRepository(
 
 suspend fun marcarTareaComoRealizada(id: String) {
     try {
-        firestore.collection("Tasks").document(id).update("completada", true).await()
+        firestore.collection("Tasks")
+            .document(id)
+            .update("completada", true)
+            .await()
     } catch (e: Exception) {
         throw Exception("Error al marcar la tarea como realizada: ${e.message}")
     }
@@ -101,8 +102,7 @@ suspend fun eliminarTarea(id: String) {
         onFailure: (Exception) -> Unit
     ) {
         firestore.collection("Tasks")
-            .whereEqualTo("userId", userId) // Filtrar tareas por userId
-
+            .whereEqualTo("userId", userId)
             .get()
             .addOnSuccessListener { snapshot ->
                 val tareas = snapshot.documents.mapNotNull { doc ->
@@ -112,8 +112,6 @@ suspend fun eliminarTarea(id: String) {
                     val completada = doc.getBoolean("completada") ?: false
                     val fecha = doc.getTimestamp("fecha")?.toDate() ?: Date()
                     val imagenPath = doc.getString("imagenPath")
-
-
                     Tarea(
                         id = id,
                         titulo = titulo,

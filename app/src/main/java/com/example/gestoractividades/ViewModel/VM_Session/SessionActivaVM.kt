@@ -27,31 +27,48 @@ class SessionActivaVM(
     private val _username = MutableStateFlow<String?>(null)
     val username: StateFlow<String?> = _username.asStateFlow()
 
+    /*
+        fun fetchCurrentUser() {
+            val userId = autenticacion.getCurrentUserId() // Obtener ID del usuario autenticado
+            if (userId != null) {
+                viewModelScope.launch {
+                    try {
+                        val result = autenticacion.getUserDetails(userId)
+                        if (result.isSuccess) {
+                            val userDetails = result.getOrNull()
+                            _userEmail.value = userDetails?.get("email") as? String ?: "Email no disponible"
+                            _username.value = userDetails?.get("username") as? String ?: "Nombre no disponible"
+                        } else {
+                            // Si el resultado falla, asignar valores predeterminados
+                            _userEmail.value = "Usuario desconocido"
+                            _username.value = "Usuario desconocido"
+                        }
+                    } catch (e: Exception) {
+                        // Manejo de errores en caso de excepciones inesperadas
+                        _userEmail.value = "Error al obtener email"
+                        _username.value = "Error al obtener nombre"
+                    }
+                }
+            } else {
+                // Si no hay usuario autenticado, asignar valores predeterminados
+                _userEmail.value = "Usuario no autenticado"
+                _username.value = "Usuario no autenticado"
+            }
+            */
     fun fetchCurrentUser() {
-        val userId = autenticacion.getCurrentUserId() // Obtener ID del usuario autenticado
+        val userId = autenticacion.getCurrentUserId()
         if (userId != null) {
             viewModelScope.launch {
-                try {
-                    val result = autenticacion.getUserDetails(userId)
-                    if (result.isSuccess) {
-                        val userDetails = result.getOrNull()
-                        _userEmail.value = userDetails?.get("email") as? String ?: "Email no disponible"
-                        _username.value = userDetails?.get("username") as? String ?: "Nombre no disponible"
-                    } else {
-                        // Si el resultado falla, asignar valores predeterminados
-                        _userEmail.value = "Usuario desconocido"
-                        _username.value = "Usuario desconocido"
-                    }
-                } catch (e: Exception) {
-                    // Manejo de errores en caso de excepciones inesperadas
-                    _userEmail.value = "Error al obtener email"
-                    _username.value = "Error al obtener nombre"
+                val result = autenticacion.getUserDetails(userId)
+                if (result.isSuccess) {
+                    val userDetails = result.getOrNull()
+                    _username.value = userDetails?.get("username") as? String
+                    _userEmail.value = userDetails?.get("email") as? String
+                } else {
+                    _username.value = "Usuario desconocido"
+                    _userEmail.value = null
                 }
             }
-        } else {
-            // Si no hay usuario autenticado, asignar valores predeterminados
-            _userEmail.value = "Usuario no autenticado"
-            _username.value = "Usuario no autenticado"
         }
     }
 

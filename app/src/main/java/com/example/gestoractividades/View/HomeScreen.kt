@@ -43,10 +43,7 @@ import com.example.gestoractividades.R
 import com.example.gestoractividades.ViewModel.VM_Home.HomeViewModel
 import com.example.gestoractividades.ViewModel.VM_Session.SessionActivaVM
 
-/*fun formatTimestamp(timestamp: Long): String {
-    val sdf = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
-    return sdf.format(java.util.Date(timestamp))
-}*/
+
 
 @Composable
 fun HomeScreen(
@@ -78,8 +75,8 @@ fun HomeScreen(
         UserLoad(
             username = username ?: "Usuario desconocido",
             logoutUser = {
-                homeViewModel.cerrarSesion() // Llama al ViewModel para cerrar sesión
-                logoutUser() // Navegación tras cerrar sesión
+                homeViewModel.cerrarSesion()
+                logoutUser()
             }
         )
         // Opciones del menú

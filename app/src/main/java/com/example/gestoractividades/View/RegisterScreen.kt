@@ -290,8 +290,6 @@ RegisterViewModelFactory es una clase que extiende ViewModelProvider.Factory,
                     onRegister()
                 }
             }
-
-
             is RegisterState.Error -> {
                 Text(
                     text = (registerState as RegisterState.Error).message,
@@ -300,8 +298,6 @@ RegisterViewModelFactory es una clase que extiende ViewModelProvider.Factory,
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
-
-
             else -> Unit
         }
     }

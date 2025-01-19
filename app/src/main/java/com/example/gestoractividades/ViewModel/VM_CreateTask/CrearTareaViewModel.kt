@@ -21,6 +21,14 @@ class CrearTareaViewModel(
     fun updateFechaHora(timeInMillis: Long) {
         _fechaHora.value = timeInMillis
     }
+    fun guardarImagenLocal(imagen: Bitmap): String? {
+        return try {
+            val nombreArchivo = "${System.currentTimeMillis()}"
+            repository.guardarImagenLocal(imagen, nombreArchivo)
+        } catch (e: Exception) {
+            null
+        }
+    }
 
     fun crearTarea(
         titulo: String,
@@ -33,9 +41,10 @@ class CrearTareaViewModel(
             try {
                 // Obtener el userId del usuario autenticado
                 val userId = autenticacion.getCurrentUserId()
-                    ?: throw Exception("No se pudo obtener el ID del usuario. Intente iniciar sesión nuevamente.")
+                    ?: throw Exception("No se pudo obtener el ID" +
+                            " del usuario. Intente iniciar sesión nuevamente.")
 
-                val fecha = _fechaHora.value?.let { Date(it) } ?: Date() // Usa la fecha seleccionada o la actual
+                val fecha = _fechaHora.value?.let { Date(it) } ?: Date()
                 repository.agregarTarea(
                     titulo = titulo,
                     descripcion = descripcion,

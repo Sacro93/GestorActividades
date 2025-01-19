@@ -13,8 +13,9 @@ import kotlinx.coroutines.flow.StateFlow
 import androidx.compose.runtime.State
 import com.example.gestoractividades.Model.Autenticacion
 
-class ListadoTareasViewModel(private val repository: TareasRepository,
-                             private val autenticacion: Autenticacion
+class ListadoTareasViewModel(
+    private val repository: TareasRepository,
+    private val autenticacion: Autenticacion
 ) : ViewModel() {
 
     private val _tareas = mutableStateOf<List<Tarea>>(emptyList())
@@ -27,7 +28,10 @@ class ListadoTareasViewModel(private val repository: TareasRepository,
         viewModelScope.launch {
             try {
                 val userId = autenticacion.getCurrentUserId()
-                    ?: throw Exception("No se pudo obtener el ID del usuario. Intente iniciar sesión nuevamente.")
+                    ?: throw Exception(
+                        "No se pudo obtener el ID del usuario. " +
+                                "Intente iniciar sesión nuevamente."
+                    )
                 repository.obtenerTareas(
                     userId = userId,
                     onSuccess = { tareas ->
@@ -43,7 +47,11 @@ class ListadoTareasViewModel(private val repository: TareasRepository,
         }
     }
 
-    fun obtenerTareaPorId(id: String, onSuccess: (Tarea?) -> Unit, onFailure: (Exception) -> Unit) {
+    fun obtenerTareaPorId(
+        id: String,
+        onSuccess: (Tarea?) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
         viewModelScope.launch {
             try {
                 val tarea = repository.obtenerTareaPorId(id)
@@ -54,7 +62,11 @@ class ListadoTareasViewModel(private val repository: TareasRepository,
         }
     }
 
-    fun marcarTareaComoRealizada(id: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+    fun marcarTareaComoRealizada(
+        id: String,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
         viewModelScope.launch {
             try {
                 repository.marcarTareaComoRealizada(id)
